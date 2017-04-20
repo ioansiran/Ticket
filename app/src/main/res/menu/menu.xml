@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Delete messages" />
+    <item android:title="Forward SMS conversation" />
+    <item android:title="Move to private messages" />
+    <item android:title="Search" />
+    <item android:title="Add subject" />
+    <item android:title="Insert smiley" />
+    <item android:title="Insert text templates" />
+    <item android:title="Add to contact" />
+    <item android:title="Add to block list" />
+    <item android:title="Reply later" />
+    <item android:title="Settings" />
+</menu>
