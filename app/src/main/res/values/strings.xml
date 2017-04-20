@@ -3,4 +3,5 @@
     <string name="number">7479</string>
     <string name="limit">%1$d/160</string>
     <string name="hint">To: 7479</string>
+    <string name="date">%2$s %1$d, %3$d, %4$s:%5$s</string>
 </resources>

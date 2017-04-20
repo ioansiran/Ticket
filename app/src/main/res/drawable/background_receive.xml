@@ -2,7 +2,7 @@
     android:shape="rectangle">
 
     <!-- Optional, round your corners_top -->
-    <corners android:radius="40dp" />
+    <corners android:radius="20dp" />
 
     <gradient
         android:endColor="#EAEAEA"

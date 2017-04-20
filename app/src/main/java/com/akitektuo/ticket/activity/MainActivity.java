@@ -1,8 +1,10 @@
-package com.akitektuo.ticket;
+package com.akitektuo.ticket.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -11,11 +13,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.akitektuo.ticket.R;
+import com.akitektuo.ticket.adapter.MessageAdapter;
+import com.akitektuo.ticket.adapter.MessageItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private PopupMenu popupMenu;
     private TextView textLimit;
     private EditText editMessage;
+    private RecyclerView listMessages;
+    private List<MessageItem> messages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +61,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         findViewById(R.id.button_send).setOnClickListener(this);
+        listMessages = (RecyclerView) findViewById(R.id.list_message);
+        listMessages.setLayoutManager(new LinearLayoutManager(this));
+        messages = new ArrayList<>();
+        messages.add(new MessageItem(0, "35", 20, 5, 2017, 20, 3));
+        messages.add(new MessageItem(1, "Mesaj foarte foarte foarte foarte foarte foarte foarte " +
+                "foarte foarte foarte foarte foarte foarte foarte foarte foarte foarte foarte foarte " +
+                "foarte foarte foarte lung...", 20, 5, 2017, 20, 4));
+        listMessages.setAdapter(new MessageAdapter(this, messages));
+        listMessages.scrollToPosition(messages.size());
     }
 
     @Override
