@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/layout_message"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_message"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="4dp">
@@ -36,6 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                android:autoLink="all"
                 android:maxWidth="200dp"
                 android:text="35"
                 android:textColor="@color/colorAccent"
@@ -72,6 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                android:autoLink="all"
                 android:maxWidth="200dp"
                 android:text="Biletul pentru linia 35 a fost activat. Valabil pana la 18:18 in 05/04/2017. Cost total:0.50 EUR+Tva. Cod confirmare:852447"
                 android:textColor="#464646"

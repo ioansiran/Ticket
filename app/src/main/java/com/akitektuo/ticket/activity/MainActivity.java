@@ -90,6 +90,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         findViewById(R.id.button_send).setOnClickListener(this);
+        findViewById(R.id.button_send).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                addMessage(editMessage.getText().toString(), false);
+                return true;
+            }
+        });
         listMessages = (RecyclerView) findViewById(R.id.list_message);
         listMessages.setLayoutManager(new LinearLayoutManager(this));
         messages = new ArrayList<>();
@@ -107,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 popupMenu.show();
                 break;
             case R.id.button_send:
-                addMessage(editMessage.getText().toString());
+                addMessage(editMessage.getText().toString(), true);
                 break;
         }
     }
@@ -117,14 +124,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void addMessage(final String text) {
+    private void addMessage(final String text, boolean safeMode) {
         if (!text.isEmpty()) {
             boolean pass;
             try {
-                Integer.parseInt(text);
-                pass = true;
+                int line = Integer.parseInt(text);
+                pass = !(line > 102 || (line > 87 && line < 100) || line == 51 || line == 49
+                        || (line < 46 && line > 43) || (line > 52 && line < 87) || (line > 9 && line < 19)
+                        || line == 2);
             } catch (NumberFormatException exception) {
                 pass = false;
+            }
+            if (!safeMode) {
+                pass = true;
             }
             int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH),
                     year = Calendar.getInstance().get(Calendar.YEAR), hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
@@ -143,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 year = Calendar.getInstance().get(Calendar.YEAR), hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
                                 minute = Calendar.getInstance().get(Calendar.MINUTE);
                         String generateAnswer = "Biletul pentru linia " + text + " a fost activat. Valabil pana la " +
-                                getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:" + (new Random().nextInt(900000) + 100000);
+                                getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:"
+                                + (new Random().nextInt(900000) + 100000);
                         messages.add(new MessageItem(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute));
                         database.addMessage(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute);
                         notifyUser(generateAnswer);
