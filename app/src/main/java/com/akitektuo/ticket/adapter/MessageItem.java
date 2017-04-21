@@ -6,6 +6,7 @@ package com.akitektuo.ticket.adapter;
 
 public class MessageItem {
 
+    private boolean error;
     private int type;
     private String text;
     private int day;
@@ -14,7 +15,8 @@ public class MessageItem {
     private int hour;
     private int minute;
 
-    public MessageItem(int type, String text, int day, int month, int year, int hour, int minute) {
+    public MessageItem(boolean error, int type, String text, int day, int month, int year, int hour, int minute) {
+        setError(error);
         setType(type);
         setText(text);
         setDay(day);
@@ -78,5 +80,13 @@ public class MessageItem {
 
     public void setMinute(int minute) {
         this.minute = minute;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
     }
 }

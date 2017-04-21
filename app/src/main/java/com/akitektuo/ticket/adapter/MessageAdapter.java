@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,12 +41,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         if (item.getType() == 0) {
             viewHolder.layoutSender.setVisibility(View.VISIBLE);
             viewHolder.layoutReceiver.setVisibility(View.GONE);
+            if (item.isError()) {
+                viewHolder.imageSenderError.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.imageSenderError.setVisibility(View.GONE);
+            }
             viewHolder.textSenderMessage.setText(item.getText());
             viewHolder.textSenderDate.setText(context.getString(R.string.date, item.getDay(),
                     convertMonth(item.getMonth()), item.getYear(), convertTime(item.getHour()), convertTime(item.getMinute())));
         } else {
             viewHolder.layoutReceiver.setVisibility(View.VISIBLE);
             viewHolder.layoutSender.setVisibility(View.GONE);
+            if (item.isError()) {
+                viewHolder.imageReceiverError.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.imageReceiverError.setVisibility(View.GONE);
+            }
             viewHolder.textReceiverMessage.setText(item.getText());
             viewHolder.textReceiverDate.setText(context.getString(R.string.date, item.getDay(),
                     convertMonth(item.getMonth()), item.getYear(), convertTime(item.getHour()), convertTime(item.getMinute())));
@@ -59,29 +70,29 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private String convertMonth(int month) {
         switch (month) {
-            case 1:
+            case 0:
                 return "Jan";
-            case 2:
+            case 1:
                 return "Feb";
-            case 3:
+            case 2:
                 return "Mar";
-            case 4:
+            case 3:
                 return "Apr";
-            case 5:
+            case 4:
                 return "May";
-            case 6:
+            case 5:
                 return "Jun";
-            case 7:
+            case 6:
                 return "Jul";
-            case 8:
+            case 7:
                 return "Aug";
-            case 9:
+            case 8:
                 return "Sept";
-            case 10:
+            case 9:
                 return "Oct";
-            case 11:
+            case 10:
                 return "Nov";
-            case 12:
+            case 11:
                 return "Dec";
             default:
                 return "ERROR";
@@ -97,18 +108,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout layoutSender;
+        ImageView imageSenderError;
         TextView textSenderMessage;
         TextView textSenderDate;
         LinearLayout layoutReceiver;
+        ImageView imageReceiverError;
         TextView textReceiverMessage;
         TextView textReceiverDate;
 
         ViewHolder(View view) {
             super(view);
             layoutSender = (LinearLayout) view.findViewById(R.id.layout_sender);
+            imageSenderError = (ImageView) view.findViewById(R.id.image_sender_error);
             textSenderMessage = (TextView) view.findViewById(R.id.text_sender_message);
             textSenderDate = (TextView) view.findViewById(R.id.text_sender_date);
             layoutReceiver = (LinearLayout) view.findViewById(R.id.layout_receiver);
+            imageReceiverError = (ImageView) view.findViewById(R.id.image_receiver_error);
             textReceiverMessage = (TextView) view.findViewById(R.id.text_receiver_message);
             textReceiverDate = (TextView) view.findViewById(R.id.text_receiver_date);
         }

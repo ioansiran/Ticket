@@ -11,26 +11,43 @@
         android:layout_alignParentEnd="true"
         android:background="@drawable/background_send"
         android:gravity="end"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="16dp"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/text_sender_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="200dp"
-            android:text="35"
-            android:textColor="@color/colorAccent"
-            android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/image_sender_error"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/error"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/text_sender_date"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apr 20, 2017, 17:33"
-            android:textColor="#666666" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_sender_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxWidth="200dp"
+                android:text="35"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/text_sender_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apr 20, 2017, 17:33"
+                android:textColor="#bdc3c7" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
@@ -39,27 +56,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/background_receive"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="16dp"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/text_receiver_message"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="200dp"
-            android:text="Biletul pentru linia 35 a fost activat. Valabil pana la 18:18 in 05/04/2017. Cost total:0.50 EUR+Tva. Cod confirmare:852447"
-            android:textColor="#464646"
-            android:textSize="16sp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text_receiver_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="Apr 20, 2017, 17:33"
-            android:textColor="#666666" />
+            <TextView
+                android:id="@+id/text_receiver_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxWidth="200dp"
+                android:text="Biletul pentru linia 35 a fost activat. Valabil pana la 18:18 in 05/04/2017. Cost total:0.50 EUR+Tva. Cod confirmare:852447"
+                android:textColor="#464646"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/text_receiver_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="Apr 20, 2017, 17:33"
+                android:textColor="#666666" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/image_receiver_error"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/error"
+            android:visibility="gone" />
 
     </LinearLayout>
 
