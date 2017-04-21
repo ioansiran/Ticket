@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import com.akitektuo.ticket.R;
 import com.akitektuo.ticket.adapter.MessageAdapter;
 import com.akitektuo.ticket.adapter.MessageItem;
+import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_DAY;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_ERROR;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_HOUR;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_MINUTE;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_MONTH;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_TEXT;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_TYPE;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_YEAR;
 import static com.akitektuo.ticket.util.Constant.TYPE_RECEIVER;
 import static com.akitektuo.ticket.util.Constant.TYPE_SENDER;
 
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editMessage;
     private RecyclerView listMessages;
     private List<MessageItem> messages;
+    private DatabaseHelper database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +93,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listMessages = (RecyclerView) findViewById(R.id.list_message);
         listMessages.setLayoutManager(new LinearLayoutManager(this));
         messages = new ArrayList<>();
-
-        // get from database
-        listMessages.setAdapter(new MessageAdapter(this, messages));
-        listMessages.scrollToPosition(messages.size());
+        database = new DatabaseHelper(this);
+        refreshMessages();
     }
 
     @Override
@@ -109,35 +118,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addMessage(final String text) {
-        boolean pass;
-        try {
-            Integer.parseInt(text);
-            pass = true;
-        } catch (NumberFormatException exception) {
-            pass = false;
-        }
-        messages.add(new MessageItem(!pass, TYPE_SENDER, text, Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
-                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE)));
-        listMessages.setAdapter(new MessageAdapter(this, messages));
-        editMessage.setText("");
-        hideKeyboard();
-        listMessages.scrollToPosition(messages.size());
-        if (pass) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    String generateAnswer = "Biletul pentru linia " + text + " a fost activat. Valabil pana la " +
-                            getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:" + (new Random().nextInt(900000) + 100000);
-                    messages.add(new MessageItem(false, TYPE_RECEIVER, generateAnswer, Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
-                            Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.YEAR),
-                            Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE)));
-                    notifyUser(generateAnswer);
-                    listMessages.setAdapter(new MessageAdapter(getApplicationContext(), messages));
-                    listMessages.scrollToPosition(messages.size());
-                    //add to db
-                }
-            }, 30000);
+        if (!text.isEmpty()) {
+            boolean pass;
+            try {
+                Integer.parseInt(text);
+                pass = true;
+            } catch (NumberFormatException exception) {
+                pass = false;
+            }
+            int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH),
+                    year = Calendar.getInstance().get(Calendar.YEAR), hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                    minute = Calendar.getInstance().get(Calendar.MINUTE);
+            messages.add(new MessageItem(!pass, TYPE_SENDER, text, day, month, year, hour, minute));
+            listMessages.setAdapter(new MessageAdapter(this, messages));
+            editMessage.setText("");
+            hideKeyboard();
+            listMessages.scrollToPosition(messages.size() - 1);
+            if (pass) {
+                database.addMessage(false, TYPE_SENDER, text, day, month, year, hour, minute);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH),
+                                year = Calendar.getInstance().get(Calendar.YEAR), hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                                minute = Calendar.getInstance().get(Calendar.MINUTE);
+                        String generateAnswer = "Biletul pentru linia " + text + " a fost activat. Valabil pana la " +
+                                getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:" + (new Random().nextInt(900000) + 100000);
+                        messages.add(new MessageItem(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute));
+                        database.addMessage(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute);
+                        notifyUser(generateAnswer);
+                        listMessages.setAdapter(new MessageAdapter(getApplicationContext(), messages));
+                        listMessages.scrollToPosition(messages.size() - 1);
+                    }
+                }, 30000);
+            }
         }
     }
 
@@ -196,11 +210,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setContentIntent(contentIntent);
         builder.setAutoCancel(true);
         builder.setLights(Color.BLUE, 500, 500);
-        long[] pattern = {500};
+        long[] pattern = {1000};
         builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
         builder.setVibrate(pattern);
         builder.setStyle(new NotificationCompat.InboxStyle());
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(1, builder.build());
+    }
+
+    private void refreshMessages() {
+        Cursor cursor = database.getMessages();
+        if (cursor.moveToFirst()) {
+            do {
+                messages.add(new MessageItem(Boolean.getBoolean(cursor.getString(CURSOR_ERROR)), cursor.getInt(CURSOR_TYPE),
+                        cursor.getString(CURSOR_TEXT), cursor.getInt(CURSOR_DAY), cursor.getInt(CURSOR_MONTH),
+                        cursor.getInt(CURSOR_YEAR), cursor.getInt(CURSOR_HOUR), cursor.getInt(CURSOR_MINUTE)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        listMessages.setAdapter(new MessageAdapter(this, messages));
+        listMessages.scrollToPosition(messages.size() - 1);
     }
 }

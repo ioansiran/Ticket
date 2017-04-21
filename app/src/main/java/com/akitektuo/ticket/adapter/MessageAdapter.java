@@ -1,15 +1,21 @@
 package com.akitektuo.ticket.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akitektuo.ticket.R;
+import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.util.List;
 
@@ -21,6 +27,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private Context context;
     private List<MessageItem> items;
+    private DatabaseHelper database;
 
     public MessageAdapter(Context context, List<MessageItem> objects) {
         this.context = context;
@@ -37,7 +44,45 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(MessageAdapter.ViewHolder viewHolder, int position) {
-        MessageItem item = items.get(position);
+        final MessageItem item = items.get(position);
+        database = new DatabaseHelper(context);
+        viewHolder.layoutMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Message options");
+                builder.setItems(R.array.message, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (i == 0) {
+                            AlertDialog.Builder builderDelete = new AlertDialog.Builder(context)
+                                    .setTitle("Delete")
+                                    .setMessage("This message will be deleted")
+                                    .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            database.deleteMessage(item.getText(), item.getDay(), item.getMonth(),
+                                                    item.getYear(), item.getHour(), item.getMinute());
+                                            Toast.makeText(context, "Refresh needed...", Toast.LENGTH_LONG).show();
+                                        }
+                                    }).setNegativeButton("Cancel", null);
+                            final AlertDialog alertDialogDelete = builderDelete.create();
+                            alertDialogDelete.setOnShowListener(new DialogInterface.OnShowListener() {
+                                @Override
+                                public void onShow(DialogInterface dialogInterface) {
+                                    alertDialogDelete.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.colorPrimary));
+                                    alertDialogDelete.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.colorPrimary));
+                                }
+                            });
+                            alertDialogDelete.show();
+                        }
+                    }
+                });
+                builder.setNeutralButton("Cancel", null);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+        });
         if (item.getType() == 0) {
             viewHolder.layoutSender.setVisibility(View.VISIBLE);
             viewHolder.layoutReceiver.setVisibility(View.GONE);
@@ -107,6 +152,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        RelativeLayout layoutMessage;
         LinearLayout layoutSender;
         ImageView imageSenderError;
         TextView textSenderMessage;
@@ -118,6 +164,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         ViewHolder(View view) {
             super(view);
+            layoutMessage = (RelativeLayout) view.findViewById(R.id.layout_message);
             layoutSender = (LinearLayout) view.findViewById(R.id.layout_sender);
             imageSenderError = (ImageView) view.findViewById(R.id.image_sender_error);
             textSenderMessage = (TextView) view.findViewById(R.id.text_sender_message);
