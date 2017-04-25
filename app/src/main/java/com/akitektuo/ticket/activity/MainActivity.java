@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         listMessages.setAdapter(new MessageAdapter(getApplicationContext(), messages));
                         listMessages.scrollToPosition(messages.size() - 1);
                     }
-                }, 60000);
+                }, 30000);
             }
         }
     }
