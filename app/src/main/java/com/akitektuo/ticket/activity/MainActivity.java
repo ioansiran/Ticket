@@ -32,6 +32,7 @@ import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -124,17 +125,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void addMessage(final String text, boolean safeMode) {
+    private void addMessage(String text, boolean safeMode) {
         if (!text.isEmpty()) {
-            boolean pass;
-            try {
-                int line = Integer.parseInt(text);
-                pass = !(line > 102 || (line > 87 && line < 100) || line == 51 || line == 49
-                        || (line < 46 && line > 43) || (line > 52 && line < 87) || (line > 9 && line < 19)
-                        || line == 2);
-            } catch (NumberFormatException exception) {
-                pass = false;
-            }
+            boolean pass = checkLine(text);
             if (!safeMode) {
                 pass = true;
             }
@@ -147,14 +140,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             hideKeyboard();
             listMessages.scrollToPosition(messages.size() - 1);
             if (pass) {
-                database.addMessage(false, TYPE_SENDER, text, day, month, year, hour, minute);
+                final String line = text.toUpperCase();
+                database.addMessage(false, TYPE_SENDER, line, day, month, year, hour, minute);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH),
                                 year = Calendar.getInstance().get(Calendar.YEAR), hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
                                 minute = Calendar.getInstance().get(Calendar.MINUTE);
-                        String generateAnswer = "Biletul pentru linia " + text + " a fost activat. Valabil pana la " +
+                        String generateAnswer = "Biletul pentru linia " + line + " a fost activat. Valabil pana la " +
                                 getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:"
                                 + (new Random().nextInt(900000) + 100000);
                         messages.add(new MessageItem(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute));
@@ -189,6 +183,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             resMin = String.valueOf(min);
         }
         return resHour + ":" + resMin;
+    }
+
+    private boolean checkLine(String line) {
+        line = line.toUpperCase();
+        List<String> validLines = new ArrayList<>(Arrays.asList("1", "3", "4", "5", "6", "7", "8", "8L",
+                "9", "19", "20", "21", "22", "23", "23L", "24", "24B", "25", "25N", "26", "26L", "27",
+                "28", "28B", "29", "30", "31", "32", "32B", "33", "34", "35", "36B", "36L", "37", "38",
+                "39", "39L", "40", "40S", "41", "42", "43", "43B", "43P", "46", "46B", "47", "48", "48L",
+                "50", "50L", "52", "87B", "100", "101", "102", "102L"));
+        for (String x : validLines) {
+            if (line.equals(x)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getGeneratedDate() {
