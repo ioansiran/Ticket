@@ -7,4 +7,5 @@ package com.akitektuo.ticket.util;
 public class Constant {
     public static final int TYPE_SENDER = 0;
     public static final int TYPE_RECEIVER = 1;
+    public static MessageGenerator messageGenerator;
 }

@@ -2,7 +2,6 @@ package com.akitektuo.ticket.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +17,8 @@ import com.akitektuo.ticket.R;
 import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.util.List;
+
+import static com.akitektuo.ticket.util.Constant.messageGenerator;
 
 /**
  * Created by AoD Akitektuo on 20-Apr-17 at 18:28.
@@ -63,7 +64,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             database.deleteMessage(item.getText(), item.getDay(), item.getMonth(),
                                                     item.getYear(), item.getHour(), item.getMinute());
-                                            Toast.makeText(context, "Refresh needed...", Toast.LENGTH_LONG).show();
+                                            messageGenerator.refreshMessages();
+                                            Toast.makeText(context, "Message deleted...", Toast.LENGTH_LONG).show();
                                         }
                                     }).setNegativeButton("Cancel", null);
                             final AlertDialog alertDialogDelete = builderDelete.create();

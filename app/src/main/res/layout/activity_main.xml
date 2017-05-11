@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     android:orientation="vertical"
-    tools:context="com.akitektuo.ticket.activity.MainActivity">
+    tools:activity="com.akitektuo.ticket.activity.MainActivity">
 
     <RelativeLayout
         android:id="@+id/layout_header"
