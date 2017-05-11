@@ -28,7 +28,6 @@ import android.widget.Toast;
 import com.akitektuo.ticket.R;
 import com.akitektuo.ticket.adapter.MessageAdapter;
 import com.akitektuo.ticket.adapter.MessageItem;
-import com.akitektuo.ticket.background.NotificationHelper;
 import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -39,7 +38,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import static com.akitektuo.ticket.background.NotificationService.notificationHelper;
 import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_DAY;
 import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_ERROR;
 import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_HOUR;
@@ -143,22 +141,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             listMessages.scrollToPosition(messages.size() - 1);
             if (pass) {
                 final String line = text.toUpperCase();
-                database.addMessage(false, TYPE_SENDER, line, day, month, year, hour, minute);
-                notificationHelper = new NotificationHelper();
+                database.addMessage(false, TYPE_SENDER, text, day, month, year, hour, minute);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH),
-                                year = Calendar.getInstance().get(Calendar.YEAR), hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                                month = Calendar.getInstance().get(Calendar.MONTH),
+                                year = Calendar.getInstance().get(Calendar.YEAR),
+                                hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
                                 minute = Calendar.getInstance().get(Calendar.MINUTE);
                         String generateAnswer = "Biletul pentru linia " + line + " a fost activat. Valabil pana la " +
                                 getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:"
                                 + (new Random().nextInt(900000) + 100000);
-                        messages.add(new MessageItem(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute));
                         database.addMessage(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute);
                         notifyUser(generateAnswer);
-                        listMessages.setAdapter(new MessageAdapter(getApplicationContext(), messages));
-                        listMessages.scrollToPosition(messages.size() - 1);
+                        refreshMessages();
                     }
                 }, 30000);
             }
@@ -205,6 +202,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String getGeneratedDate() {
         Date date = new Date(System.currentTimeMillis() + 2700000);
+//        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH) + 1,
+//                year = Calendar.getInstance().get(Calendar.YEAR);
+//        String resDay, resMonth;
+//        if (day < 10) {
+//            resDay = "0" + day;
+//        } else {
+//            resDay = String.valueOf(day);
+//        }
+//        if (month < 10) {
+//            resMonth = "0" + month;
+//        } else {
+//            resMonth = String.valueOf(month);
+//        }
+//        return resDay + "/" + resMonth + "/" + year;
         return new SimpleDateFormat("dd/MM/yyyy").format(date);
     }
 
@@ -230,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void refreshMessages() {
+        messages.clear();
         Cursor cursor = database.getMessages();
         if (cursor.moveToFirst()) {
             do {
