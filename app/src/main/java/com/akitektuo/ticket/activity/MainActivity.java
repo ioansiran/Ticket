@@ -28,9 +28,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PopupMenu popupMenu;
     private TextView textLimit;
     private EditText editMessage;
-    private RecyclerView listMessages;
-    private List<MessageItem> messages;
-    private DatabaseHelper database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             }
         });
-        listMessages = (RecyclerView) findViewById(R.id.list_message);
+        RecyclerView listMessages = (RecyclerView) findViewById(R.id.list_message);
         listMessages.setLayoutManager(new LinearLayoutManager(this));
-        messages = new ArrayList<>();
-        database = new DatabaseHelper(this);
+        List<MessageItem> messages = new ArrayList<>();
+        DatabaseHelper database = new DatabaseHelper(this);
         messageGenerator = new MessageGenerator(this, database, editMessage, messages, listMessages);
         messageGenerator.refreshMessages();
     }
