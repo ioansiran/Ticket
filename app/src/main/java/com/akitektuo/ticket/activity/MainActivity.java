@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.akitektuo.ticket.R;
 import com.akitektuo.ticket.adapter.MessageAdapter;
 import com.akitektuo.ticket.adapter.MessageItem;
+import com.akitektuo.ticket.background.NotificationHelper;
 import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +39,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static com.akitektuo.ticket.background.NotificationService.notificationHelper;
 import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_DAY;
 import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_ERROR;
 import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_HOUR;
@@ -142,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (pass) {
                 final String line = text.toUpperCase();
                 database.addMessage(false, TYPE_SENDER, line, day, month, year, hour, minute);
+                notificationHelper = new NotificationHelper();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -202,20 +205,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String getGeneratedDate() {
         Date date = new Date(System.currentTimeMillis() + 2700000);
-//        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH) + 1,
-//                year = Calendar.getInstance().get(Calendar.YEAR);
-//        String resDay, resMonth;
-//        if (day < 10) {
-//            resDay = "0" + day;
-//        } else {
-//            resDay = String.valueOf(day);
-//        }
-//        if (month < 10) {
-//            resMonth = "0" + month;
-//        } else {
-//            resMonth = String.valueOf(month);
-//        }
-//        return resDay + "/" + resMonth + "/" + year;
         return new SimpleDateFormat("dd/MM/yyyy").format(date);
     }
 
