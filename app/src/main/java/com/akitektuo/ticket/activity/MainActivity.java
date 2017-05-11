@@ -202,20 +202,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String getGeneratedDate() {
         Date date = new Date(System.currentTimeMillis() + 2700000);
-//        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH), month = Calendar.getInstance().get(Calendar.MONTH) + 1,
-//                year = Calendar.getInstance().get(Calendar.YEAR);
-//        String resDay, resMonth;
-//        if (day < 10) {
-//            resDay = "0" + day;
-//        } else {
-//            resDay = String.valueOf(day);
-//        }
-//        if (month < 10) {
-//            resMonth = "0" + month;
-//        } else {
-//            resMonth = String.valueOf(month);
-//        }
-//        return resDay + "/" + resMonth + "/" + year;
         return new SimpleDateFormat("dd/MM/yyyy").format(date);
     }
 
