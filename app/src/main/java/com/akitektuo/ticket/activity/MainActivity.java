@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 popupMenu.show();
                 break;
             case R.id.button_send:
-                messageGenerator.addMessage(editMessage.getText().toString(), false);
+                messageGenerator.addMessage(editMessage.getText().toString(), true);
                 break;
         }
     }
