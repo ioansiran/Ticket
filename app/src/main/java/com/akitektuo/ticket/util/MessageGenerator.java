@@ -188,7 +188,7 @@ public class MessageGenerator {
     private void notifyUser(String message) {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(getActivity())
-                        .setSmallIcon(R.drawable.notification)
+                        .setSmallIcon(R.drawable.message)
                         .setLargeIcon(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon))
                         .setContentTitle("New message")
                         .setContentText(message);
@@ -198,10 +198,10 @@ public class MessageGenerator {
         builder.setContentIntent(contentIntent);
         builder.setAutoCancel(true);
         builder.setLights(Color.BLUE, 500, 500);
-        long[] pattern = {1000};
+        long[] pattern = {1500};
         builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
         builder.setVibrate(pattern);
-        builder.setStyle(new NotificationCompat.InboxStyle());
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
         NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(1, builder.build());
     }

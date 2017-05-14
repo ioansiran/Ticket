@@ -1,12 +1,16 @@
 package com.akitektuo.ticket.activity;
 
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +25,12 @@ import com.akitektuo.ticket.util.MessageGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_DAY;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_HOUR;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_MINUTE;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_MONTH;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_TEXT;
+import static com.akitektuo.ticket.database.DatabaseContract.CURSOR_YEAR;
 import static com.akitektuo.ticket.util.Constant.messageGenerator;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -28,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PopupMenu popupMenu;
     private TextView textLimit;
     private EditText editMessage;
+    private DatabaseHelper database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +47,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.button_back).setOnClickListener(this);
         Button buttonMenu = (Button) findViewById(R.id.button_menu);
         buttonMenu.setOnClickListener(this);
+        database = new DatabaseHelper(this);
         popupMenu = new PopupMenu(this, buttonMenu);
         popupMenu.getMenuInflater().inflate(R.menu.menu, popupMenu.getMenu());
+        AlertDialog.Builder builderDelete = new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Delete")
+                .setMessage("All the messages will be deleted")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Cursor cursor = database.getMessages();
+                        if (cursor.moveToFirst()) {
+                            do {
+                                database.deleteMessage(cursor.getString(CURSOR_TEXT),
+                                        cursor.getInt(CURSOR_DAY), cursor.getInt(CURSOR_MONTH),
+                                        cursor.getInt(CURSOR_YEAR), cursor.getInt(CURSOR_HOUR),
+                                        cursor.getInt(CURSOR_MINUTE));
+                            } while (cursor.moveToNext());
+                        }
+                        cursor.close();
+                        messageGenerator.refreshMessages();
+                        Toast.makeText(MainActivity.this, "All messages deleted...", Toast.LENGTH_LONG).show();
+                    }
+                }).setNegativeButton("Cancel", null);
+        final AlertDialog alertDialogDelete = builderDelete.create();
+        alertDialogDelete.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialogDelete.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(MainActivity.this.getResources().getColor(R.color.colorPrimary));
+                alertDialogDelete.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(MainActivity.this.getResources().getColor(R.color.colorPrimary));
+            }
+        });
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.menu_item_delete) {
+//                    Toast.makeText(getApplicationContext(), "You pressed delete.", Toast.LENGTH_LONG).show();
+                    alertDialogDelete.show();
+                }
+                return true;
+            }
+        });
         textLimit = (TextView) findViewById(R.id.text_limit);
         textLimit.setText(getString(R.string.limit, 0));
         editMessage = (EditText) findViewById(R.id.edit_text_message);
@@ -72,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerView listMessages = (RecyclerView) findViewById(R.id.list_message);
         listMessages.setLayoutManager(new LinearLayoutManager(this));
         List<MessageItem> messages = new ArrayList<>();
-        DatabaseHelper database = new DatabaseHelper(this);
         messageGenerator = new MessageGenerator(this, database, editMessage, messages, listMessages);
         messageGenerator.refreshMessages();
     }
