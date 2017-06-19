@@ -127,7 +127,7 @@ public class MessageGenerator {
                                 minute = Calendar.getInstance().get(Calendar.MINUTE);
                         String generateAnswer = "Biletul pentru linia " + line + " a fost activat. Valabil pana la " +
                                 getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:"
-                                + (new Random().nextInt(900000) + 100000);
+                                + getGeneratedCode();
                         database.addMessage(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute);
                         notifyUser(generateAnswer);
                         refreshMessages();
@@ -219,5 +219,14 @@ public class MessageGenerator {
         cursor.close();
         getListMessages().setAdapter(new MessageAdapter(getActivity(), getMessages()));
         getListMessages().scrollToPosition(getMessages().size() - 1);
+    }
+
+    private String getGeneratedCode() {
+        return String.valueOf(new Random().nextInt(9) + 1) +
+                (new Random().nextInt(9) + 1) +
+                (new Random().nextInt(9) + 1) +
+                (new Random().nextInt(9) + 1) +
+                (new Random().nextInt(9) + 1) +
+                (new Random().nextInt(9) + 1);
     }
 }
