@@ -132,7 +132,7 @@ public class MessageGenerator {
                         notifyUser(generateAnswer);
                         refreshMessages();
                     }
-                }, 30000);
+                }, 3000);
             }
         }
     }
