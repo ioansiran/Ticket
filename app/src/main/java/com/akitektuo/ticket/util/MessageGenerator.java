@@ -19,6 +19,7 @@ import com.akitektuo.ticket.R;
 import com.akitektuo.ticket.activity.MainActivity;
 import com.akitektuo.ticket.adapter.MessageAdapter;
 import com.akitektuo.ticket.adapter.MessageItem;
+import com.akitektuo.ticket.app.MyApplication;
 import com.akitektuo.ticket.database.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -129,7 +130,8 @@ public class MessageGenerator {
                                 getGeneratedTime() + " in " + getGeneratedDate() + ". Cost total:0.50 EUR+Tva. Cod confirmare:"
                                 + getGeneratedCode();
                         database.addMessage(false, TYPE_RECEIVER, generateAnswer, day, month, year, hour, minute);
-                        notifyUser(generateAnswer);
+                        if (!MyApplication.isActivityVisible())
+                            notifyUser(generateAnswer);
                         refreshMessages();
                     }
                 }, 3000);

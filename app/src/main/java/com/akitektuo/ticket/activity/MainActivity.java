@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.akitektuo.ticket.R;
 import com.akitektuo.ticket.adapter.MessageItem;
+import com.akitektuo.ticket.app.MyApplication;
 import com.akitektuo.ticket.database.DatabaseHelper;
 import com.akitektuo.ticket.util.MessageGenerator;
 
@@ -39,7 +40,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textLimit;
     private EditText editMessage;
     private DatabaseHelper database;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyApplication.activityResumed();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MyApplication.activityPaused();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
